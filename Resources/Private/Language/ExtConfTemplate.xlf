@@ -5,16 +5,16 @@
     <header/>
     <body>
       <trans-unit id="feature.redirectRule" xml:space="preserve">
-          <source>Redirect rule, use {local}, {domain}, {tld} and fluid viewhelpers to construct dynamic addresses. : Example "mailtest+{local}@{domain}.{tld}"</source>
+          <source>Redirect rule, use {local}, {domain}, {tld} and Fluid ViewHelpers to construct dynamic addresses.: Example "mailtest+{local}@{domain}.{tld}"</source>
       </trans-unit>
       <trans-unit id="feature.testerIp" xml:space="preserve">
-        <source>Tester IP, configured like devIPmask</source>
+        <source>Tester IP, configured like devIPmask, set to * to match all</source>
       </trans-unit>
       <trans-unit id="feature.userAgent" xml:space="preserve">
-        <source>User-Agent to match. Leave blank for all, e.g. if test-browser can't change the UA. Example: Example "Codeception Mail Test"</source>
+        <source>User-Agent to match. Set to * for all, e.g. if test-browser can't change the UA.: Example "Codeception Mail Test"</source>
       </trans-unit>
       <trans-unit id="feature.subjectTemplate" xml:space="preserve">
-        <source>Subject template</source>
+        <source>Subject template, use {subject} for the original subject</source>
       </trans-unit>
     </body>
   </file>
