@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0" xmlns:t3="http://typo3.org/schemas/xliff">
+  <file source-language="en" datatype="plaintext" original="messages" date="2018-01-19T22:00:18Z"
+        product-name="td_mailredirect">
+    <header/>
+    <body>
+      <trans-unit id="feature.redirectRule" xml:space="preserve">
+          <source>Redirect rule, use {local}, {domain}, {tld} and fluid viewhelpers to construct dynamic addresses. : Example "mailtest+{local}@{domain}.{tld}"</source>
+      </trans-unit>
+      <trans-unit id="feature.testerIp" xml:space="preserve">
+        <source>Tester IP, configured like devIPmask</source>
+      </trans-unit>
+      <trans-unit id="feature.userAgent" xml:space="preserve">
+        <source>User-Agent to match. Leave blank for all, e.g. if test-browser can't change the UA. Example: Example "Codeception Mail Test"</source>
+      </trans-unit>
+      <trans-unit id="feature.subjectTemplate" xml:space="preserve">
+        <source>Subject template</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

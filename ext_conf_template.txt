@@ -1,0 +1,11 @@
+# cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.redirectRule
+redirectRule = {local}@{domain}.{tld}
+
+# cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.testerIp
+testerIp =
+
+# cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.userAgent
+userAgent =
+
+# cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.subjectTemplate
+subjectTemplate = [TEST] {subject}

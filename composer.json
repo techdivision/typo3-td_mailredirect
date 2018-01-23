@@ -1,0 +1,19 @@
+{
+    "name": "techdivision/td-mailredirect",
+    "type": "typo3-cms-extension",
+    "description": "Rewrites recipients for mails in dev / test setups",
+    "authors": [
+        {
+            "name": "Andreas Kießling",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^8.7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "TechDivision\\TdMailredirect\\": "Classes"
+        }
+    }
+}
