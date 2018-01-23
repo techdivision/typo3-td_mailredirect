@@ -41,6 +41,7 @@ class EmConfiguration implements \TYPO3\CMS\Core\SingletonInterface
         }
 
         foreach ($configuration as $key => $value) {
+            $value = trim($value);
             if (property_exists($this, $key) && !empty($value)) {
                 $this->$key = $value;
             }

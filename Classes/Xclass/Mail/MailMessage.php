@@ -45,7 +45,11 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         $remoteAddress = GeneralUtility::getIndpEnv('REMOTE_ADDR');
 
         $configuredUserAgent = static::$emConfiguration->getUserAgent();
+        $configuredTesterIp = static::$emConfiguration->getTesterIp();
 
+        if ($configuredUserAgent === '' && $configuredTesterIp === '') {
+            return false;
+        }
 
         if ($configuredUserAgent !== ''
             && $configuredUserAgent !== '*'
@@ -54,7 +58,7 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         }
 
         if (static::$emConfiguration->getTesterIp()
-            && !GeneralUtility::cmpIP($remoteAddress, static::$emConfiguration->getTesterIp())) {
+            && !GeneralUtility::cmpIP($remoteAddress, $configuredTesterIp)) {
             return false;
         }
 
