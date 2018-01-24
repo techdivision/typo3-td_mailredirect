@@ -82,14 +82,14 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         $tld = array_pop($domainParts);
         $domain = implode('.', $domainParts);
 
-        $templateVaraibles = [
+        $templateVariables = [
             'email' => $email,
             'local' => $local,
             'domain' => $domain,
             'tld' => $tld,
         ];
 
-        $template->assignMultiple($templateVaraibles);
+        $template->assignMultiple($templateVariables);
 
         return $template->render();
     }
