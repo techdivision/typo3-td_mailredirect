@@ -7,23 +7,23 @@
 namespace TechDivision\TdMailredirect\Xclass\Mail;
 
 
-use TechDivision\TdMailredirect\Domain\Model\Dto\EmConfiguration;
+use TechDivision\TdMailredirect\Domain\Model\Dto\Configuration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /** @noinspection LongInheritanceChainInspection */
+
 class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
 {
 
     /**
+     * @var Configuration
+     */
+    protected $emConfiguration;
+    /**
      * @var array
      */
     protected $originalReceivers = [];
-
-    /**
-     * @var EmConfiguration
-     */
-    protected static $emConfiguration;
 
     /**
      * @inheritdoc
@@ -31,94 +31,8 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     public function __construct($subject = null, $body = null, $contentType = null, $charset = null)
     {
-        static::$emConfiguration = GeneralUtility::makeInstance(EmConfiguration::class);
+        $this->emConfiguration = GeneralUtility::makeInstance(Configuration::class);
         parent::__construct($subject, $body, $contentType, $charset);
-    }
-
-    /**
-     * @return bool
-     * @throws \UnexpectedValueException
-     */
-    private function redirectEnabled():bool
-    {
-        $userAgent = GeneralUtility::getIndpEnv('HTTP_USER_AGENT');
-        $remoteAddress = GeneralUtility::getIndpEnv('REMOTE_ADDR');
-
-        $configuredUserAgent = static::$emConfiguration->getUserAgent();
-        $configuredTesterIp = static::$emConfiguration->getTesterIp();
-
-        if ($configuredUserAgent === '' && $configuredTesterIp === '') {
-            return false;
-        }
-
-        if ($configuredUserAgent !== ''
-            && $configuredUserAgent !== '*'
-            && $configuredUserAgent !== $userAgent) {
-            return false;
-        }
-
-        if (static::$emConfiguration->getTesterIp()
-            && !GeneralUtility::cmpIP($remoteAddress, $configuredTesterIp)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param string $email
-     * @return string
-     */
-    private function getOverrideAddress(string $email):string
-    {
-        $template = GeneralUtility::makeInstance(StandaloneView::class);
-        $templateSource = static::$emConfiguration->getRedirectRule();
-
-        $template->setTemplateSource($templateSource);
-        $template->assign('email', $email);
-
-        list($local, $fullDomain) = explode('@', $email, 2);
-        $domainParts = explode('.', $fullDomain);
-        $tld = array_pop($domainParts);
-        $domain = implode('.', $domainParts);
-
-        $templateVariables = [
-            'email' => $email,
-            'local' => $local,
-            'domain' => $domain,
-            'tld' => $tld,
-        ];
-
-        $template->assignMultiple($templateVariables);
-
-        return $template->render();
-    }
-
-    /**
-     * @param array $addresses
-     * @return array
-     */
-    private function getOverrideAddresses(array $addresses): array
-    {
-        $overrideAdresses = [];
-        foreach ($addresses as $email => $name) {
-            $overrideEmail = $this->getOverrideAddress($email);
-            $overrideAdresses[$overrideEmail] = $name;
-        }
-
-        return $overrideAdresses;
-    }
-
-    /**
-     * @param array $addresses
-     * @param $field
-     */
-    private function writeOverrideAddressesToMail(array $addresses, $field)
-    {
-        $this->originalReceivers = array_merge($this->originalReceivers, $addresses);
-        if (!$this->_setHeaderFieldModel($field, $addresses)) {
-            $this->getHeaders()->addMailboxHeader($field, $addresses);
-        }
     }
 
     /**
@@ -127,7 +41,7 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     public function getTo()
     {
-        if (!$this->redirectEnabled()) {
+        if (!$this->emConfiguration->isRedirectEnabled()) {
             return parent::getTo();
         }
 
@@ -146,12 +60,39 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
     }
 
     /**
+     * @param array $addresses
+     * @return array
+     */
+    private function getOverrideAddresses(array $addresses): array
+    {
+        $overrideAddresses = [];
+        foreach ($addresses as $email => $name) {
+            $overrideEmail = $this->emConfiguration->getOverrideAddress($email);
+            $overrideAddresses[$overrideEmail] = $name;
+        }
+
+        return $overrideAddresses;
+    }
+
+    /**
+     * @param array $addresses
+     * @param $field
+     */
+    private function writeOverrideAddressesToMail(array $addresses, $field)
+    {
+        $this->originalReceivers = array_merge($this->originalReceivers, $addresses);
+        if (!$this->_setHeaderFieldModel($field, $addresses)) {
+            $this->getHeaders()->addMailboxHeader($field, $addresses);
+        }
+    }
+
+    /**
      * Override Cc
      * @inheritdoc
      */
     public function getCc()
     {
-        if (!$this->redirectEnabled()) {
+        if (!$this->emConfiguration->isRedirectEnabled()) {
             return parent::getCc();
         }
 
@@ -173,7 +114,7 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     public function getBcc()
     {
-        if (!$this->redirectEnabled()) {
+        if (!$this->emConfiguration->isRedirectEnabled()) {
             return parent::getBcc();
         }
 
@@ -189,7 +130,6 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         return [];
     }
 
-
     /**
      * Get the body content of this entity as a string.
      *
@@ -199,7 +139,7 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     public function getBody()
     {
-        if (!$this->redirectEnabled()) {
+        if (!$this->emConfiguration->isRedirectEnabled()) {
             return parent::getBody();
         }
 
@@ -216,12 +156,12 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     public function setSubject($subject)
     {
-        if (!$this->redirectEnabled()) {
+        if (!$this->emConfiguration->isRedirectEnabled()) {
             return parent::setSubject($subject);
         }
 
         $template = GeneralUtility::makeInstance(StandaloneView::class);
-        $template->setTemplateSource(static::$emConfiguration->getSubjectTemplate());
+        $template->setTemplateSource($this->emConfiguration->getSubjectTemplate());
         $template->assign('subject', $subject);
 
         $newSubject = $template->render();

@@ -13,6 +13,9 @@
       <trans-unit id="feature.userAgent" xml:space="preserve">
         <source>User-Agent to match. Set to * for all, e.g. if test-browser can't change the UA.: Example "Codeception Mail Test"</source>
       </trans-unit>
+      <trans-unit id="feature.whitelistedAddresses" xml:space="preserve">
+        <source>Whitelisted recipient adresses won't be redirected</source>
+      </trans-unit>
       <trans-unit id="feature.subjectTemplate" xml:space="preserve">
         <source>Subject template, use {subject} for the original subject</source>
       </trans-unit>
