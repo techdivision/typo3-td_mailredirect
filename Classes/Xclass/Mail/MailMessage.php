@@ -68,6 +68,10 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         $overrideAddresses = [];
         foreach ($addresses as $email => $name) {
             $overrideEmail = $this->emConfiguration->getOverrideAddress($email);
+            // save the email so it can be added to the body
+            if ($email !== $overrideEmail) {
+                $this->originalReceivers[$email] = $name;
+            }
             $overrideAddresses[$overrideEmail] = $name;
         }
 
@@ -80,7 +84,6 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
      */
     private function writeOverrideAddressesToMail(array $addresses, $field)
     {
-        $this->originalReceivers = array_merge($this->originalReceivers, $addresses);
         if (!$this->_setHeaderFieldModel($field, $addresses)) {
             $this->getHeaders()->addMailboxHeader($field, $addresses);
         }
