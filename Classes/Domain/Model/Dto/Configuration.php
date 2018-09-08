@@ -38,7 +38,7 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
     public function __construct(array $configuration = null)
     {
         if (null === $configuration) {
-            $configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['td_mailredirect'], false);
+            $configuration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['td_mailredirect'], ['allowed_classes' => false]);
         }
 
         foreach ($configuration as $key => $value) {
@@ -47,6 +47,7 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
                 $this->$key = $value;
             }
         }
+
         $this->whitelistedAddresses = GeneralUtility::trimExplode(',', $this->whitelistedAddresses);
     }
 
@@ -73,19 +74,19 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
     public function isRedirectEnabled(): bool
     {
         // we only support redirecting mails from frontend requests
-        if (!$this->isFrontendRequest()) {
+        if (false === $this->isFrontendRequest()) {
             return false;
         }
 
         $remoteAddress = GeneralUtility::getIndpEnv('REMOTE_ADDR');
         $configuredTesterIp = $this->getTesterIp();
-        if (!$this->isRequestFromAllowedIp($remoteAddress, $configuredTesterIp)) {
+        if (false === $this->isRequestFromAllowedIp($remoteAddress, $configuredTesterIp)) {
             return false;
         }
 
         $userAgent = GeneralUtility::getIndpEnv('HTTP_USER_AGENT');
         $configuredUserAgent = $this->getUserAgent();
-        if (!$this->isRequestFromAllowedUserAgent($userAgent, $configuredUserAgent)) {
+        if (false === $this->isRequestFromAllowedUserAgent($userAgent, $configuredUserAgent)) {
             return false;
         }
 
@@ -99,6 +100,9 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function isEmailAddressWhitelisted(string $email, array $whitelistedAddresses): bool
     {
+        if (\count($whitelistedAddresses) === 0) {
+            return false;
+        }
         return \count(array_filter($whitelistedAddresses, function ($entry) use ($email) {
             return fnmatch($entry, $email);
         })) > 0;
@@ -129,6 +133,10 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
     {
         if (empty($configuredTesterIp)) {
             return false;
+        }
+
+        if ($configuredTesterIp === '*') {
+            return true;
         }
 
         return GeneralUtility::cmpIP($remoteAddress, $configuredTesterIp);
