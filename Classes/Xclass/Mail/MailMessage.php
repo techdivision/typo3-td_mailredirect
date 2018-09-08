@@ -70,7 +70,7 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
             $overrideEmail = $this->emConfiguration->getOverrideAddress($email);
             // save the email so it can be added to the body
             if ($email !== $overrideEmail) {
-                $this->originalReceivers[$email] = $name;
+                    $this->originalReceivers[$email] = $name;
             }
             $overrideAddresses[$overrideEmail] = $name;
         }
@@ -147,7 +147,9 @@ class MailMessage extends \TYPO3\CMS\Core\Mail\MailMessage
         }
 
         $body = parent::getBody();
-        $body .= '<br /><hr /><br />This mail must be sent to : ' . implode(';', array_keys($this->originalReceivers));
+        if (\count($this->originalReceivers) > 0) {
+            $body .= '<br /><hr /><br />This mail must be sent to : ' . implode(';', array_keys($this->originalReceivers));
+        }
         return $body;
     }
 

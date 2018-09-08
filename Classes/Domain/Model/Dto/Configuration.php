@@ -48,7 +48,7 @@ class Configuration implements \TYPO3\CMS\Core\SingletonInterface
             }
         }
 
-        $this->whitelistedAddresses = GeneralUtility::trimExplode(',', $this->whitelistedAddresses);
+        $this->whitelistedAddressesArray = GeneralUtility::trimExplode(',', $this->whitelistedAddresses);
     }
 
     /**

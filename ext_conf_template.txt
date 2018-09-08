@@ -8,7 +8,7 @@ testerIp =
 userAgent =
 
 # cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.whitelistedAddresses
-whitelistedAdresses =
+whitelistedAddresses =
 
 # cat=Features; type=string; label=LLL:EXT:td_mailredirect/Resources/Private/Language/ExtConfTemplate.xlf:feature.subjectTemplate
 subjectTemplate = [TEST] {subject}
